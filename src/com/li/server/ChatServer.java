@@ -5,10 +5,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @program: ChatingRoom
  * @description: 服务器(连接，使用Map存储Socket写，将Socket写添加到Map,删除，打印，关闭，判断退出，开启)
+ * 使用了线程池来保存创建的线程能使其重用，降低了资源消耗
  * @author: Mr.li
  * @create: 2020-07-08 15:09
  **/
@@ -17,9 +21,11 @@ public class ChatServer {
     private final String QUIT = "quit";
     private ServerSocket serverSocket;
 
+    private ExecutorService executorService;
     private Map<Integer, Writer> ChatServerMap;
 
     public ChatServer(){
+        executorService = Executors.newFixedThreadPool(10);
         ChatServerMap = new HashMap<>();
     }
 
@@ -77,7 +83,7 @@ public class ChatServer {
             while(true){
                 Socket socket = serverSocket.accept();
                 //创建ChatHandler线程
-                new Thread(new ChatHandler(this,socket)).start();
+                executorService.execute(new ChatHandler(this,socket));
             }
         } catch (IOException e) {
             e.printStackTrace();
