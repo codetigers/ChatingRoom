@@ -1,8 +1,7 @@
-package com.li.client;
+package com.bio.client;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.BatchUpdateException;
 
 /**
  * @program: ChatingRoom
